@@ -44,6 +44,18 @@ assertEqual(test, false)
 test = "{\"asdf\":\"asdf\"}"
 assertEqual(test, true)
 
+test = "{     \"asdf\" : \"asdf\"    }"
+assertEqual(test, true)
+
+test = "{\"asdf\":true}"
+assertEqual(test, true)
+
+test = "{\"asdf\":null}"
+assertEqual(test, true)
+
+test = "{\"asdf\":false}"
+assertEqual(test, true)
+
 test = "{123124:\"asdf\"}"
 assertEqual(test, false)
 

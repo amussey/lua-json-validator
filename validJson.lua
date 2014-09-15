@@ -17,59 +17,12 @@ function string:trim()
     return string.match(self, "^()%s*$") and "" or string.match(self, "^%s*(.*%S)")
 end
 
-
-
-function validJson2(jsonString)
-    jsonString = jsonString:trim()
-    if jsonString == "{}" or jsonString == "[]" then
-        return true
-    end
-
-    jsonString = string.gsub(jsonString, "\\\"", "")
-
-    if string.sub(jsonString, 1, 1) == "{" and string.sub(jsonString, string.len(jsonString), string.len(jsonString)) == "}" then
-        return validJsonArray(jsonString)
-    elseif string.sub(jsonString, 1, 1) == "[" and string.sub(jsonString, string.len(jsonString), string.len(jsonString)) == "]" then
-        return validJsonList(jsonString)
-    end
-
-
-    return false
+function tablelength(T)
+    local count = 0
+    for _ in pairs(T) do count = count + 1 end
+    return count
 end
 
-
-function findDeepestSet(contents)
-    contents = contents:trim()
-
-    local js = 1
-    local je = 2
-
-    if string.sub(jsonString, 1, 1) == "{" then
-        while string.sub(jsonString, je, je) ~= "}" do
-            if string.sub(jsonString, je, je) ~= "]" then
-                return false
-            end
-            je = je + 1
-        end
-
-        if string.sub(jsonString, je, je) ~= "}" then
-            return false
-        end
-    end
-
-    if string.sub(jsonString, 1, 1) == "[" then
-        while string.sub(jsonString, je, je) ~= "]" do
-            if string.sub(jsonString, je, je) ~= "}" then
-                return false
-            end
-            je = je + 1
-        end
-
-        if string.sub(jsonString, je, je) ~= "]" then
-            return false
-        end
-    end
-end
 
 
 function validJson(contents)
@@ -81,7 +34,6 @@ function validJson(contents)
 end
 
 function isValid(contents)
-    
     contents = contents:trim()
 
     if contents == "{}" or contents == "[]" or contents == "\"\"" then
@@ -140,41 +92,7 @@ function isValid(contents)
             return false
         end
     end
-
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function tablelength(T)
-    local count = 0
-    for _ in pairs(T) do count = count + 1 end
-    return count
-end
-
 
 function arrayCheck(contents)
     contents = contents:trim()
@@ -192,13 +110,13 @@ function arrayCheck(contents)
 
     local finalValue = true
     for _,value in pairs(contents) do
-        finalValue = finalValue and arrayitemcheck(value)
+        finalValue = finalValue and arrayItemCheck(value)
     end
 
     return finalValue
 end
 
-function arrayitemcheck(contents)
+function arrayItemCheck(contents)
     contents = contents:split(":")
 
     if tablelength(contents) ~= 2 then
@@ -208,7 +126,7 @@ function arrayitemcheck(contents)
     contents[1] = contents[1]:trim()
     contents[2] = contents[2]:trim()
 
-    local contentValue1 = stringcheck(contents[1])
+    local contentValue1 = stringCheck(contents[1])
 
     local value = contents[2]
 
@@ -219,7 +137,7 @@ function arrayitemcheck(contents)
     elseif string.sub(value, 1, 1) == "[" and string.sub(value, string.len(value), string.len(value)) == "]" then
         listcheckbool = listCheck(string.sub(value, 2, string.len(value)-1))
     end
-    local contentValue2 = (stringcheck(value) or numbercheck(value) or listcheckbool or arraycheckbool)
+    local contentValue2 = (stringCheck(value) or numberCheck(value) or boolCheck(value) or nullCheck(value) or listcheckbool or arraycheckbool)
 
     return contentValue1 and contentValue2
 end
@@ -252,13 +170,13 @@ function listCheck(contents)
             listcheckbool = listCheck(string.sub(value, 2, string.len(value)-1))
         end
 
-        finalValue = finalValue and (stringcheck(value) or numbercheck(value) or listcheckbool or arraycheckbool)
+        finalValue = finalValue and (stringCheck(value) or numberCheck(value) or boolCheck(value) or nullCheck(value) or listcheckbool or arraycheckbool)
     end
 
     return finalValue
 end
 
-function stringcheck(contents)
+function stringCheck(contents)
     contents = contents:trim()
 
     if string.sub(contents, 1, 1) ~= "\"" or string.sub(contents, string.len(contents), string.len(contents)) ~= "\"" then
@@ -269,7 +187,7 @@ function stringcheck(contents)
     return (string.find(returnString, "\"") == nil)
 end
 
-function numbercheck(contents)
+function numberCheck(contents)
     contents = tostring(contents):trim()
     if string.sub(contents, 1, 1) == "\"" or string.sub(contents, string.len(contents), string.len(contents)) == "\"" then
         return false
@@ -279,6 +197,16 @@ function numbercheck(contents)
     local contentCheck2 = (string.match(contents, "[\-\+]?[0-9]*[\.[0-9]+]?") == contents)
     
     return (contentCheck1 and contentCheck2)
+end
+
+function boolCheck(contents)
+    contents = tostring(contents):trim()
+    return contents == "true" or contents == "false"
+end
+
+function nullCheck(contents)
+    contents = tostring(contents):trim()
+    return contents == "null"
 end
 
 
