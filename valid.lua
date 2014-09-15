@@ -1,4 +1,4 @@
-function jsonsting(jsonstring)
+function jsonstring(jsonstring)
     jsonstring = jsonstring:trim()
     returnString = string.sub(jsonstring, 2, string.len(jsonstring)-1)
     if string.sub(jsonstring, 1, 1) == "{" and string.sub(jsonstring, string.len(jsonstring), string.len(jsonstring)) == "}" then
@@ -55,15 +55,6 @@ function arraycheck(contents)
     end
 
     return finalValue
-
-    -- contents = contents:trim()
-
-    -- returnString = string.sub(contents, 2, string.len(contents)-1)
-    -- if string.sub(contents, 1, 1) == "{" and string.sub(contents, string.len(contents), string.len(contents)) == "}" then
-    --     return arraycheck(returnString)
-    -- elseif string.sub(contents, 1, 1) == "[" and string.sub(contents, string.len(contents), string.len(contents)) == "]" then
-    --     return listcheck(returnString)
-    -- end
 end
 
 function arrayitemcheck(contents)
@@ -73,12 +64,9 @@ function arrayitemcheck(contents)
         -- There is not a key-value pair.
         return false
     end
-    print(tostring(numbercheck(contents[2])))
 
     local contentValue1 = stringcheck(contents[1])
     local contentValue2 = (stringcheck(contents[2]) or numbercheck(contents[2]))
-
-    print("arrayitemcheck: " .. tostring(contentValue1) .. ":" .. tostring(contentValue2))
 
     return contentValue1 and contentValue2
 end
@@ -101,8 +89,6 @@ end
 function stringcheck(contents)
     contents = contents:trim()
 
-    print("stringcheck" .. contents)
-
     if string.sub(contents, 1, 1) ~= "\"" or string.sub(contents, string.len(contents), string.len(contents)) ~= "\"" then
         return false
     end
@@ -114,13 +100,12 @@ end
 
 function numbercheck(contents)
     contents = tostring(contents):trim()
-    print("numbercheck: " .. contents)
     if string.sub(contents, 1, 1) == "\"" or string.sub(contents, string.len(contents), string.len(contents)) == "\"" then
         return false
     end
     
     local contentCheck1 = tostring(string.match("1.42", "[\-\+]?[0-9]*[\.[0-9]+]?") ~= nil)
     local contentCheck2 = (string.match(contents, "[\-\+]?[0-9]*[\.[0-9]+]?") == contents)
-    print("numbercheck: " .. contents .. " - " .. tostring(contentCheck1) .. " - " .. tostring(contentCheck2))
+    
     return (contentCheck1 and contentCheck2)
 end
