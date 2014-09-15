@@ -91,12 +91,8 @@ function isValid(contents)
     local js = 1
     local je = 2
 
-    -- print("what:" .. contents)
-
     local searchChar = ""
     local failChar = ""
-
-    -- print ("first char: " .. string.sub(contents, js, js))
 
     if string.sub(contents, js, js) == "{" then
         searchChar = "}"
@@ -108,10 +104,8 @@ function isValid(contents)
         return false
     end
 
-    -- print ("now reading")
 
     while string.sub(contents, je, je) ~= searchChar and string.sub(contents, je, je) ~= "" do
-        -- print(string.sub(contents, je, je) .. " looking for " .. searchChar)
 
         if string.sub(contents, je, je) == failChar then
             return false
@@ -125,8 +119,6 @@ function isValid(contents)
             js = je
         end
 
-        -- print(tostring(string.sub(contents, je, je) == searchChar))
-
         je = je + 1
     end
 
@@ -138,14 +130,11 @@ function isValid(contents)
         arrayCheckBool = arrayCheck(string.sub(contents, js, je))
         listCheckBool = listCheck(string.sub(contents, js, je))
 
-        -- print(tostring(arrayCheckBool) .. " and " .. tostring(listCheckBool))
 
         checkBool = arrayCheckBool or listCheckBool
         if checkBool then
             -- contents without the current value.
-            -- print("before: " .. contents)
             contents = string.sub(contents, 1, js-1) .. "\"\"" .. string.sub(contents, je+1, string.len(contents))
-            -- print("after:  " .. contents)
             return isValid(contents)
         else
             return false
@@ -153,8 +142,6 @@ function isValid(contents)
     end
 
 end
-
-
 
 
 
@@ -191,7 +178,11 @@ end
 
 function arrayCheck(contents)
     contents = contents:trim()
-    contents = string.sub(contents, 2, string.len(contents)-1)
+    if string.sub(contents, 1, 1) == "{" and string.sub(contents, string.len(contents), string.len(contents)) == "}" then
+        contents = string.sub(contents, 2, string.len(contents)-1):trim()
+    else
+        return false
+    end
 
     if contents == "" then
         return true
@@ -201,7 +192,6 @@ function arrayCheck(contents)
 
     local finalValue = true
     for _,value in pairs(contents) do
-        -- print("Whoooo  " .. tostring(value))
         finalValue = finalValue and arrayitemcheck(value)
     end
 
@@ -239,18 +229,21 @@ end
 
 function listCheck(contents)
     contents = contents:trim()
-    -- print(contents)
+    if string.sub(contents, 1, 1) == "[" and string.sub(contents, string.len(contents), string.len(contents)) == "]" then
+        contents = string.sub(contents, 2, string.len(contents)-1):trim()
+    else
+        return false
+    end
+    
     if contents == "" then
         return true
     end
-
-    -- before we split it at the comma, it might be made of multiple lists.
-
 
     contents = contents:split(",")
 
     local finalValue = true
     for _,value in pairs(contents) do
+
         local listcheckbool = false
         local arraycheckbool = false
         if string.sub(value, 1, 1) == "{" and string.sub(value, string.len(value), string.len(value)) == "}" then
@@ -272,7 +265,6 @@ function stringcheck(contents)
         return false
     end
     local returnString = string.sub(contents, 2, string.len(contents)-1)
-    -- returnString = string.gsub(returnString, "\\\"", "a")
 
     return (string.find(returnString, "\"") == nil)
 end

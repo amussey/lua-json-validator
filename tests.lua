@@ -1,10 +1,10 @@
 local validJson = require "validJson"
 
-local expectedSpaces = 50
+local expectedSpaces = 60
 
 function assertEqual(testString, testExpected)
 
-    testResult = validJson(testString)
+    local testResult = validJson(testString)
 
     testString = testString .. " "
 
@@ -14,7 +14,17 @@ function assertEqual(testString, testExpected)
         testStringLen = string.len(testString)
     end
 
-    print(testString .. " " .. tostring(testResult == testExpected))
+    local expectedResult = "invalid?   "
+    if testExpected then
+        expectedResult = "valid?     "
+    end
+
+    local result = "fail"
+    if testResult == testExpected then
+        result = "pass"
+    end
+
+    print(testString .. " " .. expectedResult .. result)
 end
 
 
@@ -154,8 +164,26 @@ assertEqual(test, true)
 test = "[[]]"
 assertEqual(test, true)
 
+test = "[[[]]]"
+assertEqual(test, true)
+
+test = "[[[]]]"
+assertEqual(test, true)
+
 
 -- Array in Array test
 
 test = "{\"test\": {}}"
+assertEqual(test, true)
+
+test = "{\"test\": {asdf}}"
+assertEqual(test, false)
+
+test = "{\"test\": {\"asdfsdf\": \"asdfasdf\"}}"
+assertEqual(test, true)
+
+
+-- Various other complex combinations
+
+test = "[[[{}], {}, {\"asdf\": \"woot\"}]]"
 assertEqual(test, true)
