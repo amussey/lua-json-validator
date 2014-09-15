@@ -1,10 +1,10 @@
-require "valid"
+local validJson = require "validJson"
 
 local expectedSpaces = 50
 
 function assertEqual(testString, testExpected)
 
-    testResult = jsonstring(testString)
+    testResult = validJson(testString)
 
     testString = testString .. " "
 
@@ -101,6 +101,45 @@ assertEqual(test, true)
 -- Array in List test
 
 test = "[{}]"
+assertEqual(test, true)
+
+test = "[{asdf}]"
+assertEqual(test, false)
+
+test = "[{123}]"
+assertEqual(test, false)
+
+test = "[{123:\"test\"}]"
+assertEqual(test, false)
+
+test = "[{\"test\":\"test\"}]"
+assertEqual(test, true)
+
+test = "[{\"test\":2134}]"
+assertEqual(test, true)
+
+test = "[{\"test\":\"test\", 123:\"test\"}]"
+assertEqual(test, false)
+
+test = "[{123:\"test\", \"test\":\"test\"}]"
+assertEqual(test, false)
+
+test = "[{\"test\":\"test\"}]"
+assertEqual(test, true)
+
+test = "[{\"test\":\"test\", \"test\":\"test\"}]"
+assertEqual(test, true)
+
+test = "[{\"test\":2134, \"test\":2134}]"
+assertEqual(test, true)
+
+test = "[{\"test\":2134, \"test\":2134,  \"test\":\"test\"}]"
+assertEqual(test, true)
+
+test = "[{}, 123]"
+assertEqual(test, true)
+
+test = "[{}, \"asdf\"]"
 assertEqual(test, true)
 
 
