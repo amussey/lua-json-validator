@@ -34,9 +34,9 @@ end
 
 function validJsonFile(file)
     local f = assert(io.open(file, "rb"))
-    local content = f:read("*all")
+    local contents = f:read("*all")
     f:close()
-    return validJson(content)
+    return validJson(contents)
 end
 
 
