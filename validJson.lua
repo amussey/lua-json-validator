@@ -118,119 +118,120 @@ end
 
 function arrayItemCheck(contents)
     elements = {}
+    print("A0: "..contents)
     -- only two matches will occur if ``contents'' is valid: one from each group A and B
     -- A1) adds (STRING):string
-    match = string.match(contents, '^[ ]*(".*")[ ]*:[ ]*".*"[ ]*$')
+    match = string.match(contents, '^[ \n\t\r]*(".*")[ \n\t\r]*:[ \n\t\r]*".*"[ \n\t\r]*$')
     if match ~= nil then
-        -- print("A1: "..match)
+        print("A1: "..match)
         table.insert(elements, match)
     end
     -- A2) adds (STRING):number
-    match = string.match(contents, '^[ ]*(".*")[ ]*:[ ]*[%+%-%.%d,]+[ ]*$')
+    match = string.match(contents, '^[ \n\t\r]*(".*")[ \n\t\r]*:[ \n\t\r]*[%+%-%.%d,]+[ \n\t\r]*$')
     if match ~= nil then
-        -- print("A2: "..match)
+        print("A2: "..match)
         table.insert(elements, match)
     end
     -- A3) adds (STRING):expression
-    match = string.match(contents, '^[ ]*(".*")[ ]*:[ ]*[a-zA-Z]+[ ]*$')
+    match = string.match(contents, '^[ \n\t\r]*(".*")[ \n\t\r]*:[ \n\t\r]*[a-zA-Z]+[ \n\t\r]*$')
     if match ~= nil then
-        -- print("A3: "..match)
+        print("A3: "..match)
         table.insert(elements, match)
     end
 
     -- A4) adds (NUMBER):string
-    match = string.match(contents, '^[ ]*([%+%-%.%d,]+)[ ]*:[ ]*".*"[ ]*$')
+    match = string.match(contents, '^[ \n\t\r]*([%+%-%.%d,]+)[ \n\t\r]*:[ \n\t\r]*".*"[ \n\t\r]*$')
     if match ~= nil then
-        -- print("A4: "..match)
+        print("A4: "..match)
         table.insert(elements, match)
     end
     -- A5) adds (NUMBER):number
-    match = string.match(contents, '^[ ]*([%+%-%.%d,]+)[ ]*:[ ]*[%+%-%.%d,]+[ ]*$')
+    match = string.match(contents, '^[ \n\t\r]*([%+%-%.%d,]+)[ \n\t\r]*:[ \n\t\r]*[%+%-%.%d,]+[ \n\t\r]*$')
     if match ~= nil then
-        -- print("A5: "..match)
+        print("A5: "..match)
         table.insert(elements, match)
     end
     -- A6) adds (NUMBER):expression
-    match = string.match(contents, '^[ ]*([%+%-%.%d,]+)[ ]*:[ ]*[a-zA-Z]+[ ]*$')
+    match = string.match(contents, '^[ \n\t\r]*([%+%-%.%d,]+)[ \n\t\r]*:[ \n\t\r]*[a-zA-Z]+[ \n\t\r]*$')
     if match ~= nil then
-        -- print("A6: "..match)
+        print("A6: "..match)
         table.insert(elements, match)
     end
 
     -- A7) adds (EXPRESSION):string
-    match = string.match(contents, '^[ ]*([a-zA-Z]+)[ ]*:[ ]*".*"[ ]*$')
+    match = string.match(contents, '^[ \n\t\r]*([a-zA-Z]+)[ \n\t\r]*:[ \n\t\r]*".*"[ \n\t\r]*$')
     if match ~= nil then
-        -- print("A7: "..match)
+        print("A7: "..match)
         table.insert(elements, match)
     end
     -- A8) adds (EXPRESSION):number
-    match = string.match(contents, '^[ ]*([a-zA-Z]+)[ ]*:[ ]*[%+%-%.%d,]+[ ]*$')
+    match = string.match(contents, '^[ \n\t\r]*([a-zA-Z]+)[ \n\t\r]*:[ \n\t\r]*[%+%-%.%d,]+[ \n\t\r]*$')
     if match ~= nil then
-        -- print("A8: "..match)
+        print("A8: "..match)
         table.insert(elements, match)
     end
     -- A9) adds (EXPRESSION):expression
-    match = string.match(contents, '^[ ]*([a-zA-Z]+)[ ]*:[ ]*[a-zA-Z]+[ ]*$')
+    match = string.match(contents, '^[ \n\t\r]*([a-zA-Z]+)[ \n\t\r]*:[ \n\t\r]*[a-zA-Z]+[ \n\t\r]*$')
     if match ~= nil then
-        -- print("A9: "..match)
+        print("A9: "..match)
         table.insert(elements, match)
     end
 
 
     -- B1) adds string:(STRING)
-    match = string.match(contents, '^[ ]*".*"[ ]*:[ ]*(".*")[ ]*$')
+    match = string.match(contents, '^[ \n\t\r]*".*"[ \n\t\r]*:[ \n\t\r]*(".*")[ \n\t\r]*$')
     if match ~= nil then
-        -- print("B1: "..match)
+        print("B1: "..match)
         table.insert(elements, match)
     end
     -- B2) adds string:(NUMBER)
-    match = string.match(contents, '^[ ]*".*"[ ]*:[ ]*([%+%-%.%d,]+)[ ]*$')
+    match = string.match(contents, '^[ \n\t\r]*".*"[ \n\t\r]*:[ \n\t\r]*([%+%-%.%d,]+)[ \n\t\r]*$')
     if match ~= nil then
-        -- print("B2: "..match)
+        print("B2: "..match)
         table.insert(elements, match)
     end
     -- B3) adds string:(EXPRESSION)
-    match = string.match(contents, '^[ ]*".*"[ ]*:[ ]*([a-zA-Z]+)[ ]*$')
+    match = string.match(contents, '^[ \n\t\r]*".*"[ \n\t\r]*:[ \n\t\r]*([a-zA-Z]+)[ \n\t\r]*$')
     if match ~= nil then
-        -- print("B3: "..match)
+        print("B3: "..match)
         table.insert(elements, match)
     end
 
     -- B4) adds number:(STRING)
-    match = string.match(contents, '^[ ]*[%+%-%.%d,]+[ ]*:[ ]*(".*")[ ]*$')
+    match = string.match(contents, '^[ \n\t\r]*[%+%-%.%d,]+[ \n\t\r]*:[ \n\t\r]*(".*")[ \n\t\r]*$')
     if match ~= nil then
-        -- print("B4: "..match)
+        print("B4: "..match)
         table.insert(elements, match)
     end
     -- B5) adds number:(NUMBER)
-    match = string.match(contents, '^[ ]*[%+%-%.%d,]+[ ]*:[ ]*([%+%-%.%d,]+)[ ]*$')
+    match = string.match(contents, '^[ \n\t\r]*[%+%-%.%d,]+[ \n\t\r]*:[ \n\t\r]*([%+%-%.%d,]+)[ \n\t\r]*$')
     if match ~= nil then
-        -- print("B5: "..match)
+        print("B5: "..match)
         table.insert(elements, match)
     end
     -- B6) adds number:(EXPRESSION)
-    match = string.match(contents, '^[ ]*[%+%-%.%d,]+[ ]*:[ ]*([a-zA-Z]+)[ ]*$')
+    match = string.match(contents, '^[ \n\t\r]*[%+%-%.%d,]+[ \n\t\r]*:[ \n\t\r]*([a-zA-Z]+)[ \n\t\r]*$')
     if match ~= nil then
-        -- print("B6: "..match)
+        print("B6: "..match)
         table.insert(elements, match)
     end
 
     -- B7) adds expression:(STRING)
-    match = string.match(contents, '^[ ]*[a-zA-Z]+[ ]*:[ ]*(".*")[ ]*$')
+    match = string.match(contents, '^[ \n\t\r]*[a-zA-Z]+[ \n\t\r]*:[ \n\t\r]*(".*")[ \n\t\r]*$')
     if match ~= nil then
-        -- print("B7: "..match)
+        print("B7: "..match)
         table.insert(elements, match)
     end
     -- B8) adds expression:(NUMBER)
-    match = string.match(contents, '^[ ]*[a-zA-Z]+[ ]*:[ ]*([%+%-%.%d,]+)[ ]*$')
+    match = string.match(contents, '^[ \n\t\r]*[a-zA-Z]+[ \n\t\r]*:[ \n\t\r]*([%+%-%.%d,]+)[ \n\t\r]*$')
     if match ~= nil then
-        -- print("B8: "..match)
+        print("B8: "..match)
         table.insert(elements, match)
     end
     -- B9) adds expression:(EXPRESSION)
-    match = string.match(contents, '^[ ]*[a-zA-Z]+[ ]*:[ ]*([a-zA-Z]+)[ ]*$')
+    match = string.match(contents, '^[ \n\t\r]*[a-zA-Z]+[ \n\t\r]*:[ \n\t\r]*([a-zA-Z]+)[ \n\t\r]*$')
     if match ~= nil then
-        -- print("B9: "..match)
+        print("B9: "..match)
         table.insert(elements, match)
     end
     
