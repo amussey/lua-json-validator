@@ -117,12 +117,130 @@ function arrayCheck(contents)
 end
 
 function arrayItemCheck(contents)
-    contents = contents:split(":")
+    elements = {}
+    -- only two matches will occur if ``contents'' is valid: one from each group A and B
+    -- A1) adds (STRING):string
+    match = string.match(contents, '^[ ]*(".*")[ ]*:[ ]*".*"[ ]*$')
+    if match ~= nil then
+        -- print("A1: "..match)
+        table.insert(elements, match)
+    end
+    -- A2) adds (STRING):number
+    match = string.match(contents, '^[ ]*(".*")[ ]*:[ ]*[%+%-%.%d,]+[ ]*$')
+    if match ~= nil then
+        -- print("A2: "..match)
+        table.insert(elements, match)
+    end
+    -- A3) adds (STRING):expression
+    match = string.match(contents, '^[ ]*(".*")[ ]*:[ ]*[a-zA-Z]+[ ]*$')
+    if match ~= nil then
+        -- print("A3: "..match)
+        table.insert(elements, match)
+    end
 
+    -- A4) adds (NUMBER):string
+    match = string.match(contents, '^[ ]*([%+%-%.%d,]+)[ ]*:[ ]*".*"[ ]*$')
+    if match ~= nil then
+        -- print("A4: "..match)
+        table.insert(elements, match)
+    end
+    -- A5) adds (NUMBER):number
+    match = string.match(contents, '^[ ]*([%+%-%.%d,]+)[ ]*:[ ]*[%+%-%.%d,]+[ ]*$')
+    if match ~= nil then
+        -- print("A5: "..match)
+        table.insert(elements, match)
+    end
+    -- A6) adds (NUMBER):expression
+    match = string.match(contents, '^[ ]*([%+%-%.%d,]+)[ ]*:[ ]*[a-zA-Z]+[ ]*$')
+    if match ~= nil then
+        -- print("A6: "..match)
+        table.insert(elements, match)
+    end
+
+    -- A7) adds (EXPRESSION):string
+    match = string.match(contents, '^[ ]*([a-zA-Z]+)[ ]*:[ ]*".*"[ ]*$')
+    if match ~= nil then
+        -- print("A7: "..match)
+        table.insert(elements, match)
+    end
+    -- A8) adds (EXPRESSION):number
+    match = string.match(contents, '^[ ]*([a-zA-Z]+)[ ]*:[ ]*[%+%-%.%d,]+[ ]*$')
+    if match ~= nil then
+        -- print("A8: "..match)
+        table.insert(elements, match)
+    end
+    -- A9) adds (EXPRESSION):expression
+    match = string.match(contents, '^[ ]*([a-zA-Z]+)[ ]*:[ ]*[a-zA-Z]+[ ]*$')
+    if match ~= nil then
+        -- print("A9: "..match)
+        table.insert(elements, match)
+    end
+
+
+    -- B1) adds string:(STRING)
+    match = string.match(contents, '^[ ]*".*"[ ]*:[ ]*(".*")[ ]*$')
+    if match ~= nil then
+        -- print("B1: "..match)
+        table.insert(elements, match)
+    end
+    -- B2) adds string:(NUMBER)
+    match = string.match(contents, '^[ ]*".*"[ ]*:[ ]*([%+%-%.%d,]+)[ ]*$')
+    if match ~= nil then
+        -- print("B2: "..match)
+        table.insert(elements, match)
+    end
+    -- B3) adds string:(EXPRESSION)
+    match = string.match(contents, '^[ ]*".*"[ ]*:[ ]*([a-zA-Z]+)[ ]*$')
+    if match ~= nil then
+        -- print("B3: "..match)
+        table.insert(elements, match)
+    end
+
+    -- B4) adds number:(STRING)
+    match = string.match(contents, '^[ ]*[%+%-%.%d,]+[ ]*:[ ]*(".*")[ ]*$')
+    if match ~= nil then
+        -- print("B4: "..match)
+        table.insert(elements, match)
+    end
+    -- B5) adds number:(NUMBER)
+    match = string.match(contents, '^[ ]*[%+%-%.%d,]+[ ]*:[ ]*([%+%-%.%d,]+)[ ]*$')
+    if match ~= nil then
+        -- print("B5: "..match)
+        table.insert(elements, match)
+    end
+    -- B6) adds number:(EXPRESSION)
+    match = string.match(contents, '^[ ]*[%+%-%.%d,]+[ ]*:[ ]*([a-zA-Z]+)[ ]*$')
+    if match ~= nil then
+        -- print("B6: "..match)
+        table.insert(elements, match)
+    end
+
+    -- B7) adds expression:(STRING)
+    match = string.match(contents, '^[ ]*[a-zA-Z]+[ ]*:[ ]*(".*")[ ]*$')
+    if match ~= nil then
+        -- print("B7: "..match)
+        table.insert(elements, match)
+    end
+    -- B8) adds expression:(NUMBER)
+    match = string.match(contents, '^[ ]*[a-zA-Z]+[ ]*:[ ]*([%+%-%.%d,]+)[ ]*$')
+    if match ~= nil then
+        -- print("B8: "..match)
+        table.insert(elements, match)
+    end
+    -- B9) adds expression:(EXPRESSION)
+    match = string.match(contents, '^[ ]*[a-zA-Z]+[ ]*:[ ]*([a-zA-Z]+)[ ]*$')
+    if match ~= nil then
+        -- print("B9: "..match)
+        table.insert(elements, match)
+    end
+    
+    contents = elements
+    
     if tablelength(contents) ~= 2 then
         -- There is not a key-value pair.
         return false
     end
+
     contents[1] = contents[1]:trim()
     contents[2] = contents[2]:trim()
 

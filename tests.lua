@@ -89,6 +89,44 @@ assertEqual(test, false)
 test = "{123124:\"asdf\", \"asdf\":123123, \"asdf\":\"asdf\"}"
 assertEqual(test, false)
 
+test = '{"key": "ab"}'
+assertEqual(test, true)
+
+test = '{"key": "a:b"}'
+assertEqual(test, true)
+
+test = '{"key" : "ab"}'
+assertEqual(test, true)
+
+test = '{"key" : "a:b"}'
+assertEqual(test, true)
+
+test = '{"key" :"ab"}'
+assertEqual(test, true)
+
+test = '{"key" :"a:b"}'
+assertEqual(test, true)
+
+test = '{"key" :"a::b"}'
+assertEqual(test, true)
+
+test = '{"key" :":"}'
+assertEqual(test, true)
+
+test = '{"key":":"}'
+assertEqual(test, true)
+
+test = '{":" :"a::b"}'
+assertEqual(test, true)
+
+test = '{"ke:y" :"a::b"}'
+assertEqual(test, true)
+
+test = '{::":"}'
+assertEqual(test, false)
+
+test = '{: :":"}'
+assertEqual(test, false)
 
 -- List Tests
 
