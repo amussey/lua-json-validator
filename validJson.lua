@@ -24,7 +24,6 @@ function tablelength(T)
 end
 
 
-
 function validJson(contents)
     contents = contents:trim()
     if string.sub(contents, 1, 1) ~= "{" and string.sub(contents, 1, 1) ~= "[" then
@@ -32,6 +31,14 @@ function validJson(contents)
     end
     return isValid(contents)
 end
+
+function validJsonFile(file)
+    local f = assert(io.open(file, "rb"))
+    local content = f:read("*all")
+    f:close()
+    return validJson(content)
+end
+
 
 function isValid(contents)
     contents = contents:trim()
