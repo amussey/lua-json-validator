@@ -56,10 +56,19 @@ function isValid(contents)
         return false
     end
 
-    -- print("X00: "..contents)
+    --print("X00: "..contents)
     weAreInStringLiteral = false
     while string.sub(contents, je, je) ~= searchChar and string.sub(contents, je, je) ~= "" do
-        if string.sub(contents, je, je) == '"' then
+
+        -- to skip escaped double quotes
+        if je == 1 then
+            charBeforeJe = 1
+        else
+            charBeforeJe = je - 1
+        end
+
+        -- to skip control chars in string literals
+        if string.sub(contents, je, je) == '"' and string.sub(contents, charBeforeJe, charBeforeJe) ~= '\\' then
             if weAreInStringLiteral == true then
                 weAreInStringLiteral = false
             else
@@ -129,62 +138,62 @@ end
 
 function arrayItemCheck(contents)
     elements = {}
-    -- print("A0: "..contents)
+    --print("A0: "..contents)
     -- only two matches will occur if ``contents'' is valid: one from each group A and B
     -- A1) adds (STRING):string
     match = string.match(contents, '^[ \n\t\r]*(".*")[ \n\t\r]*:[ \n\t\r]*".*"[ \n\t\r]*$')
     if match ~= nil then
-        -- print("A1: "..match)
+        --print("A1: "..match)
         table.insert(elements, match)
     end
     -- A2) adds (STRING):number
     match = string.match(contents, '^[ \n\t\r]*(".*")[ \n\t\r]*:[ \n\t\r]*[%+%-%.%d,]+[ \n\t\r]*$')
     if match ~= nil then
-        -- print("A2: "..match)
+        --print("A2: "..match)
         table.insert(elements, match)
     end
     -- A3) adds (STRING):expression
     match = string.match(contents, '^[ \n\t\r]*(".*")[ \n\t\r]*:[ \n\t\r]*[a-zA-Z]+[ \n\t\r]*$')
     if match ~= nil then
-        -- print("A3: "..match)
+        --print("A3: "..match)
         table.insert(elements, match)
     end
 
     -- A4) adds (NUMBER):string
     match = string.match(contents, '^[ \n\t\r]*([%+%-%.%d,]+)[ \n\t\r]*:[ \n\t\r]*".*"[ \n\t\r]*$')
     if match ~= nil then
-        -- print("A4: "..match)
+        --print("A4: "..match)
         table.insert(elements, match)
     end
     -- A5) adds (NUMBER):number
     match = string.match(contents, '^[ \n\t\r]*([%+%-%.%d,]+)[ \n\t\r]*:[ \n\t\r]*[%+%-%.%d,]+[ \n\t\r]*$')
     if match ~= nil then
-        -- print("A5: "..match)
+        --print("A5: "..match)
         table.insert(elements, match)
     end
     -- A6) adds (NUMBER):expression
     match = string.match(contents, '^[ \n\t\r]*([%+%-%.%d,]+)[ \n\t\r]*:[ \n\t\r]*[a-zA-Z]+[ \n\t\r]*$')
     if match ~= nil then
-        -- print("A6: "..match)
+        --print("A6: "..match)
         table.insert(elements, match)
     end
 
     -- A7) adds (EXPRESSION):string
     match = string.match(contents, '^[ \n\t\r]*([a-zA-Z]+)[ \n\t\r]*:[ \n\t\r]*".*"[ \n\t\r]*$')
     if match ~= nil then
-        -- print("A7: "..match)
+        --print("A7: "..match)
         table.insert(elements, match)
     end
     -- A8) adds (EXPRESSION):number
     match = string.match(contents, '^[ \n\t\r]*([a-zA-Z]+)[ \n\t\r]*:[ \n\t\r]*[%+%-%.%d,]+[ \n\t\r]*$')
     if match ~= nil then
-        -- print("A8: "..match)
+        --print("A8: "..match)
         table.insert(elements, match)
     end
     -- A9) adds (EXPRESSION):expression
     match = string.match(contents, '^[ \n\t\r]*([a-zA-Z]+)[ \n\t\r]*:[ \n\t\r]*[a-zA-Z]+[ \n\t\r]*$')
     if match ~= nil then
-        -- print("A9: "..match)
+        --print("A9: "..match)
         table.insert(elements, match)
     end
 
@@ -192,57 +201,57 @@ function arrayItemCheck(contents)
     -- B1) adds string:(STRING)
     match = string.match(contents, '^[ \n\t\r]*".*"[ \n\t\r]*:[ \n\t\r]*(".*")[ \n\t\r]*$')
     if match ~= nil then
-        -- print("B1: "..match)
+        --print("B1: "..match)
         table.insert(elements, match)
     end
     -- B2) adds string:(NUMBER)
     match = string.match(contents, '^[ \n\t\r]*".*"[ \n\t\r]*:[ \n\t\r]*([%+%-%.%d,]+)[ \n\t\r]*$')
     if match ~= nil then
-        -- print("B2: "..match)
+        --print("B2: "..match)
         table.insert(elements, match)
     end
     -- B3) adds string:(EXPRESSION)
     match = string.match(contents, '^[ \n\t\r]*".*"[ \n\t\r]*:[ \n\t\r]*([a-zA-Z]+)[ \n\t\r]*$')
     if match ~= nil then
-        -- print("B3: "..match)
+        --print("B3: "..match)
         table.insert(elements, match)
     end
 
     -- B4) adds number:(STRING)
     match = string.match(contents, '^[ \n\t\r]*[%+%-%.%d,]+[ \n\t\r]*:[ \n\t\r]*(".*")[ \n\t\r]*$')
     if match ~= nil then
-        -- print("B4: "..match)
+        --print("B4: "..match)
         table.insert(elements, match)
     end
     -- B5) adds number:(NUMBER)
     match = string.match(contents, '^[ \n\t\r]*[%+%-%.%d,]+[ \n\t\r]*:[ \n\t\r]*([%+%-%.%d,]+)[ \n\t\r]*$')
     if match ~= nil then
-        -- print("B5: "..match)
+        --print("B5: "..match)
         table.insert(elements, match)
     end
     -- B6) adds number:(EXPRESSION)
     match = string.match(contents, '^[ \n\t\r]*[%+%-%.%d,]+[ \n\t\r]*:[ \n\t\r]*([a-zA-Z]+)[ \n\t\r]*$')
     if match ~= nil then
-        -- print("B6: "..match)
+        --print("B6: "..match)
         table.insert(elements, match)
     end
 
     -- B7) adds expression:(STRING)
     match = string.match(contents, '^[ \n\t\r]*[a-zA-Z]+[ \n\t\r]*:[ \n\t\r]*(".*")[ \n\t\r]*$')
     if match ~= nil then
-        -- print("B7: "..match)
+        --print("B7: "..match)
         table.insert(elements, match)
     end
     -- B8) adds expression:(NUMBER)
     match = string.match(contents, '^[ \n\t\r]*[a-zA-Z]+[ \n\t\r]*:[ \n\t\r]*([%+%-%.%d,]+)[ \n\t\r]*$')
     if match ~= nil then
-        -- print("B8: "..match)
+        --print("B8: "..match)
         table.insert(elements, match)
     end
     -- B9) adds expression:(EXPRESSION)
     match = string.match(contents, '^[ \n\t\r]*[a-zA-Z]+[ \n\t\r]*:[ \n\t\r]*([a-zA-Z]+)[ \n\t\r]*$')
     if match ~= nil then
-        -- print("B9: "..match)
+        --print("B9: "..match)
         table.insert(elements, match)
     end
     
@@ -276,7 +285,7 @@ end
 
 
 function listCheck(contents)
-    -- print("ListCheck: "..contents)
+    --print("ListCheck: "..contents)
     contents = contents:trim()
     if string.sub(contents, 1, 1) == "[" and string.sub(contents, string.len(contents), string.len(contents)) == "]" then
         contents = string.sub(contents, 2, string.len(contents)-1):trim()
@@ -308,7 +317,7 @@ function listCheck(contents)
 end
 
 function stringCheck(contents)
-    -- print("StringCheck: "..contents)
+    --print("StringCheck: "..contents)
     contents = contents:trim()
 
     if string.sub(contents, 1, 1) ~= "\"" or string.sub(contents, string.len(contents), string.len(contents)) ~= "\"" then
@@ -320,7 +329,7 @@ function stringCheck(contents)
 end
 
 function numberCheck(contents)
-    -- print("NumberCheck: "..contents)
+    --print("NumberCheck: "..contents)
     contents = tostring(contents):trim()
     if string.sub(contents, 1, 1) == "\"" or string.sub(contents, string.len(contents), string.len(contents)) == "\"" then
         return false
@@ -333,13 +342,13 @@ function numberCheck(contents)
 end
 
 function boolCheck(contents)
-    -- print("boolCheck: "..contents)
+    --print("boolCheck: "..contents)
     contents = tostring(contents):trim()
     return contents == "true" or contents == "false"
 end
 
 function nullCheck(contents)
-    -- print("nullCheck: "..contents)
+    --print("nullCheck: "..contents)
     contents = tostring(contents):trim()
     return contents == "null"
 end
