@@ -24,7 +24,6 @@ function tablelength(T)
 end
 
 
-
 function validJson(contents)
     contents = contents:trim()
     if string.sub(contents, 1, 1) ~= "{" and string.sub(contents, 1, 1) ~= "[" then
@@ -32,6 +31,14 @@ function validJson(contents)
     end
     return isValid(contents)
 end
+
+function validJsonFile(file)
+    local f = assert(io.open(file, "rb"))
+    local contents = f:read("*all")
+    f:close()
+    return validJson(contents)
+end
+
 
 function isValid(contents)
     contents = contents:trim()
@@ -56,16 +63,34 @@ function isValid(contents)
         return false
     end
 
-
+    --print("X00: "..contents)
+    weAreInStringLiteral = false
     while string.sub(contents, je, je) ~= searchChar and string.sub(contents, je, je) ~= "" do
 
-        if string.sub(contents, je, je) == failChar then
+        -- to skip escaped double quotes
+        if je == 1 then
+            charBeforeJe = 1
+        else
+            charBeforeJe = je - 1
+        end
+
+        -- to skip control chars in string literals
+        if string.sub(contents, je, je) == '"' and string.sub(contents, charBeforeJe, charBeforeJe) ~= '\\' then
+            if weAreInStringLiteral == true then
+                weAreInStringLiteral = false
+            else
+                weAreInStringLiteral = true
+            end
+        end
+
+        if weAreInStringLiteral == false and string.sub(contents, je, je) == failChar then
             return false
-        elseif string.sub(contents, je, je) == "{" then
+        end
+        if weAreInStringLiteral == false and string.sub(contents, je, je) == "{" then
             searchChar = "}"
             failChar = "]"
             js = je
-        elseif string.sub(contents, je, je) == "[" then
+        elseif weAreInStringLiteral == false and string.sub(contents, je, je) == "[" then
             searchChar = "]"
             failChar = "}"
             js = je
@@ -106,6 +131,8 @@ function arrayCheck(contents)
         return true
     end
 
+    --print("X0: "..contents)
+
     contents = contents:split(",")
 
     local finalValue = true
@@ -117,12 +144,131 @@ function arrayCheck(contents)
 end
 
 function arrayItemCheck(contents)
-    contents = contents:split(":")
+    elements = {}
+    --print("A0: "..contents)
+    -- only two matches will occur if ``contents'' is valid: one from each group A and B
+    -- A1) adds (STRING):string
+    match = string.match(contents, '^[ \n\t\r]*(".*")[ \n\t\r]*:[ \n\t\r]*".*"[ \n\t\r]*$')
+    if match ~= nil then
+        --print("A1: "..match)
+        table.insert(elements, match)
+    end
+    -- A2) adds (STRING):number
+    match = string.match(contents, '^[ \n\t\r]*(".*")[ \n\t\r]*:[ \n\t\r]*[%+%-%.%d,]+[ \n\t\r]*$')
+    if match ~= nil then
+        --print("A2: "..match)
+        table.insert(elements, match)
+    end
+    -- A3) adds (STRING):expression
+    match = string.match(contents, '^[ \n\t\r]*(".*")[ \n\t\r]*:[ \n\t\r]*[a-zA-Z]+[ \n\t\r]*$')
+    if match ~= nil then
+        --print("A3: "..match)
+        table.insert(elements, match)
+    end
 
+    -- A4) adds (NUMBER):string
+    match = string.match(contents, '^[ \n\t\r]*([%+%-%.%d,]+)[ \n\t\r]*:[ \n\t\r]*".*"[ \n\t\r]*$')
+    if match ~= nil then
+        --print("A4: "..match)
+        table.insert(elements, match)
+    end
+    -- A5) adds (NUMBER):number
+    match = string.match(contents, '^[ \n\t\r]*([%+%-%.%d,]+)[ \n\t\r]*:[ \n\t\r]*[%+%-%.%d,]+[ \n\t\r]*$')
+    if match ~= nil then
+        --print("A5: "..match)
+        table.insert(elements, match)
+    end
+    -- A6) adds (NUMBER):expression
+    match = string.match(contents, '^[ \n\t\r]*([%+%-%.%d,]+)[ \n\t\r]*:[ \n\t\r]*[a-zA-Z]+[ \n\t\r]*$')
+    if match ~= nil then
+        --print("A6: "..match)
+        table.insert(elements, match)
+    end
+
+    -- A7) adds (EXPRESSION):string
+    match = string.match(contents, '^[ \n\t\r]*([a-zA-Z]+)[ \n\t\r]*:[ \n\t\r]*".*"[ \n\t\r]*$')
+    if match ~= nil then
+        --print("A7: "..match)
+        table.insert(elements, match)
+    end
+    -- A8) adds (EXPRESSION):number
+    match = string.match(contents, '^[ \n\t\r]*([a-zA-Z]+)[ \n\t\r]*:[ \n\t\r]*[%+%-%.%d,]+[ \n\t\r]*$')
+    if match ~= nil then
+        --print("A8: "..match)
+        table.insert(elements, match)
+    end
+    -- A9) adds (EXPRESSION):expression
+    match = string.match(contents, '^[ \n\t\r]*([a-zA-Z]+)[ \n\t\r]*:[ \n\t\r]*[a-zA-Z]+[ \n\t\r]*$')
+    if match ~= nil then
+        --print("A9: "..match)
+        table.insert(elements, match)
+    end
+
+
+    -- B1) adds string:(STRING)
+    match = string.match(contents, '^[ \n\t\r]*".*"[ \n\t\r]*:[ \n\t\r]*(".*")[ \n\t\r]*$')
+    if match ~= nil then
+        --print("B1: "..match)
+        table.insert(elements, match)
+    end
+    -- B2) adds string:(NUMBER)
+    match = string.match(contents, '^[ \n\t\r]*".*"[ \n\t\r]*:[ \n\t\r]*([%+%-%.%d,]+)[ \n\t\r]*$')
+    if match ~= nil then
+        --print("B2: "..match)
+        table.insert(elements, match)
+    end
+    -- B3) adds string:(EXPRESSION)
+    match = string.match(contents, '^[ \n\t\r]*".*"[ \n\t\r]*:[ \n\t\r]*([a-zA-Z]+)[ \n\t\r]*$')
+    if match ~= nil then
+        --print("B3: "..match)
+        table.insert(elements, match)
+    end
+
+    -- B4) adds number:(STRING)
+    match = string.match(contents, '^[ \n\t\r]*[%+%-%.%d,]+[ \n\t\r]*:[ \n\t\r]*(".*")[ \n\t\r]*$')
+    if match ~= nil then
+        --print("B4: "..match)
+        table.insert(elements, match)
+    end
+    -- B5) adds number:(NUMBER)
+    match = string.match(contents, '^[ \n\t\r]*[%+%-%.%d,]+[ \n\t\r]*:[ \n\t\r]*([%+%-%.%d,]+)[ \n\t\r]*$')
+    if match ~= nil then
+        --print("B5: "..match)
+        table.insert(elements, match)
+    end
+    -- B6) adds number:(EXPRESSION)
+    match = string.match(contents, '^[ \n\t\r]*[%+%-%.%d,]+[ \n\t\r]*:[ \n\t\r]*([a-zA-Z]+)[ \n\t\r]*$')
+    if match ~= nil then
+        --print("B6: "..match)
+        table.insert(elements, match)
+    end
+
+    -- B7) adds expression:(STRING)
+    match = string.match(contents, '^[ \n\t\r]*[a-zA-Z]+[ \n\t\r]*:[ \n\t\r]*(".*")[ \n\t\r]*$')
+    if match ~= nil then
+        --print("B7: "..match)
+        table.insert(elements, match)
+    end
+    -- B8) adds expression:(NUMBER)
+    match = string.match(contents, '^[ \n\t\r]*[a-zA-Z]+[ \n\t\r]*:[ \n\t\r]*([%+%-%.%d,]+)[ \n\t\r]*$')
+    if match ~= nil then
+        --print("B8: "..match)
+        table.insert(elements, match)
+    end
+    -- B9) adds expression:(EXPRESSION)
+    match = string.match(contents, '^[ \n\t\r]*[a-zA-Z]+[ \n\t\r]*:[ \n\t\r]*([a-zA-Z]+)[ \n\t\r]*$')
+    if match ~= nil then
+        --print("B9: "..match)
+        table.insert(elements, match)
+    end
+    
+    contents = elements
+    
     if tablelength(contents) ~= 2 then
         -- There is not a key-value pair.
         return false
     end
+
     contents[1] = contents[1]:trim()
     contents[2] = contents[2]:trim()
 
@@ -146,6 +292,7 @@ end
 
 
 function listCheck(contents)
+    --print("ListCheck: "..contents)
     contents = contents:trim()
     if string.sub(contents, 1, 1) == "[" and string.sub(contents, string.len(contents), string.len(contents)) == "]" then
         contents = string.sub(contents, 2, string.len(contents)-1):trim()
@@ -177,6 +324,7 @@ function listCheck(contents)
 end
 
 function stringCheck(contents)
+    --print("StringCheck: "..contents)
     contents = contents:trim()
 
     if string.sub(contents, 1, 1) ~= "\"" or string.sub(contents, string.len(contents), string.len(contents)) ~= "\"" then
@@ -188,23 +336,26 @@ function stringCheck(contents)
 end
 
 function numberCheck(contents)
+    --print("NumberCheck: "..contents)
     contents = tostring(contents):trim()
     if string.sub(contents, 1, 1) == "\"" or string.sub(contents, string.len(contents), string.len(contents)) == "\"" then
         return false
     end
     
-    local contentCheck1 = tostring(string.match("1.42", "[\-\+]?[0-9]*[\.[0-9]+]?") ~= nil)
-    local contentCheck2 = (string.match(contents, "[\-\+]?[0-9]*[\.[0-9]+]?") == contents)
+    local contentCheck1 = tostring(string.match("1.42", "[%-%+]?[0-9]*[%.[0-9]+]?") ~= nil)
+    local contentCheck2 = (string.match(contents, "[%-%+]?[0-9]*[%.[0-9]+]?") == contents)
     
     return (contentCheck1 and contentCheck2)
 end
 
 function boolCheck(contents)
+    --print("boolCheck: "..contents)
     contents = tostring(contents):trim()
     return contents == "true" or contents == "false"
 end
 
 function nullCheck(contents)
+    --print("nullCheck: "..contents)
     contents = tostring(contents):trim()
     return contents == "null"
 end
